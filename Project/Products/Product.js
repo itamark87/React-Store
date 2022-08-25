@@ -2,6 +2,7 @@ import {Link} from 'react-router-dom';
 import ProductCustomersComp from './ProductCustomers';
 
 
+// A Child of "Products" Component for Displaying each Product's Information
 function ProductComp(props) {
   return (
     <div className="App" style={ {width: "600px", border: "solid"}}>

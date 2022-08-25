@@ -2,11 +2,15 @@ import {useParams} from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import utils from '../Firebase and Utils/Utils';
 import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 
+// Edit Customer by ID Component for Administrators Use Only
 function EditCustomerComp() {
-
+  
   const params = useParams();
+
+  const navigate = useNavigate();
 
   const [customer, setCustomer] = useState({});
   const [customerProducts, setCustomerProducts] = useState([]);
@@ -37,7 +41,13 @@ function EditCustomerComp() {
 
 
   // Get customer's data and purchases on mount only
+  // Router redirects backwards if no auth key is found
   useEffect(() => {
+    let authToken = sessionStorage.getItem('Auth Token');
+    if (!authToken) {
+      alert("You do not have necessary permissions!");
+      navigate(-1);
+    }
     getCustomerAndItsProducts();
   }, []);
 
@@ -47,6 +57,7 @@ function EditCustomerComp() {
     await utils.deleteCustomer(params.id);
     customerPurchases.forEach(purch => utils.deletePurchase(purch.id));
   }
+  
 
   return (
     <div className="App" style={{width: "600px", border: "solid"}}>
@@ -81,6 +92,9 @@ function EditCustomerComp() {
             })
         }
       </table>
+      <br/><br/>
+      <input type="button" value="Go Back" onClick={() => navigate(-1)} />
+      <br/><br/>
     </div>);
 }
 

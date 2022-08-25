@@ -2,11 +2,14 @@ import {useParams} from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import utils from '../Firebase and Utils/Utils';
 import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 
+// Edit Product by ID Component for Administrators Use Only
 function EditProductComp() {
 
   const params = useParams();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState({});
   const [productCustomers, setProductCustomers] = useState([]);
@@ -38,7 +41,13 @@ function EditProductComp() {
 
 
   // Get product's data and purchases on mount only
+  // Router redirects backwards if no auth key is found
   useEffect(() => {
+    let authToken = sessionStorage.getItem('Auth Token');
+    if (!authToken) {
+      alert("You do not have necessary permissions!");
+      navigate(-1);
+    }
     getProductAndItsCustomers();
   }, []);
 
@@ -81,6 +90,9 @@ function EditProductComp() {
             })
         }
       </table>
+      <br/><br/>
+      <input type="button" value="Go Back" onClick={() => navigate(-1)} />
+      <br/><br/>
     </div>);
 }
 

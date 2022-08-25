@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 
-// This component displays total income of store by summing the total amount of purchased products
+// A Child of "Products" Component for Displaying Total Income of Store by Summing the Total Amounts of Purchased Products
 function ProductsTotalComp(props) {
 
   const [payments, setPayments] = useState([]);

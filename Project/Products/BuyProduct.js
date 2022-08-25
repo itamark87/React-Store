@@ -2,20 +2,29 @@ import { useState, useEffect } from 'react';
 import utils from '../Firebase and Utils/Utils';
 
 
+// A Child of "Customers"/"ProductCustomers" Component for Buying Products for a Given Customer
 function BuyProductComp(props) {
 
   const [products, setProducts] = useState([]);
   const [chosenProduct, setChosenProduct] = useState(0);
+
 
   // Get all products data and set chosenProduct to be the first on that array
   const getProducts = async () => {
     let tempProducts = await utils.getProducts();
     setProducts(tempProducts); 
     setChosenProduct(tempProducts[0].id);
-    }
+  }
+
 
   // Get all products data on mount only
+  // Closes this component if no auth key is found
   useEffect(() => {
+    let authToken = sessionStorage.getItem('Auth Token')
+    if (!authToken) {
+      alert("You do not have necessary permissions!")
+      props.callBack();
+    }
     getProducts();
   }, []);
 
@@ -31,7 +40,7 @@ function BuyProductComp(props) {
         }
       </select>
       <input type="button" value="Buy" onClick={() => utils.addPurchase(props.customer.id, chosenProduct)} disabled={chosenProduct === 0}/> <br/> <br/>
-      <input type="button" value="Finish" onClick={() => props.callBack()}/>
+      <input type="button" value="Finish" onClick={() => props.callBack()}/><br/><br/>
     </div>);
 }
 

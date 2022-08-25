@@ -1,19 +1,29 @@
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, useNavigate} from 'react-router-dom';
 import CustomersComp from './Customers/Customers';
 import EditCustomerComp from './Customers/EditCustomer';
 import EditProductComp from './Products/EditProduct';
-import MenuComp from "./Menu";
 import ProductsComp from './Products/Products';
 import PurhcasesComp from './Purchases/Purchases';
+import LoginPageComp from './LoginPage';
+import MenuComp from './Menu';
+import { useEffect } from 'react';
 
 
-// This is the main component from which all the routes are configured
+// This is the Main Component from which all the Routes are Configured
 function MainPageComp() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate('/login');
+}, [])
+
   return (
     <div className="App" style={ {width: "600px"} }>
       <h1>Store Management System</h1>
-      <MenuComp />
       <Routes>
+        <Route path="/login" element={ <LoginPageComp />  } />  
+        <Route path="/menu" element={ <MenuComp />  } />  
         <Route path="/products" element={ <ProductsComp />  } />
         <Route path="/customers" element={ <CustomersComp />  } />
         <Route path="/purchases" element={ <PurhcasesComp />  } />

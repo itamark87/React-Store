@@ -1,8 +1,10 @@
-import firebase from './firebaseApp';
+import { db } from './firebaseApp';
+import { collection, getDocs, doc, getDoc, setDoc, query, where, Timestamp, addDoc, deleteDoc } from "firebase/firestore";
 
 
+// Get all products and their data
 const getProducts = async () => {
-  let data = await firebase.firestore().collection('products').get();
+  const data = await getDocs(collection(db, "products"));
   let prodData = [];
   data.forEach(doc =>
     {
@@ -19,8 +21,9 @@ const getProducts = async () => {
     return prodData;
 }
 
+// Get all customers and their data
 const getCustomers = async () => {
-  let data = await firebase.firestore().collection('customers').get();
+  const data = await getDocs(collection(db, "customers"));
   let customersData = [];
   data.forEach(doc =>
     {
@@ -39,8 +42,9 @@ const getCustomers = async () => {
     return customersData;
 }
 
+// Get all purchases and their data
 const getPurchases = async () => {
-  let data = await firebase.firestore().collection('purchases').get();
+  const data = await getDocs(collection(db, "purchases"));
   let purchasesData = [];
   data.forEach(doc =>
     {
@@ -59,7 +63,8 @@ const getPurchases = async () => {
 
 // Get all purchases associated with a specific customer or a specific product, depending on key
 const getPurchasesByKey = async (key, id) => {
-  const data = await firebase.firestore().collection('purchases').where(key, '==', id).get();
+  const q = query(collection(db, "purchases"), where(key, '==', id));
+  const data = await getDocs(q);
   let purchasesByKey = [];
   data.forEach(doc =>
     {
@@ -76,54 +81,64 @@ const getPurchasesByKey = async (key, id) => {
   return purchasesByKey;
 }
 
+// Get product's data by ID
 const getProduct = async (productId) =>
 {
-  let doc = await firebase.firestore().collection('products').doc(productId).get();
-  let obj = {...doc.data()};
+  const docRef = doc(db, "products", productId);
+  const docSnap = await getDoc(docRef);
+  let obj = {...docSnap.data()};
   return obj;
 }
 
+// Update product with the given payload
 const updateProduct = async (product) =>
 {
-  await firebase.firestore().collection('products').doc(product.id).set(product);  
+  await setDoc(doc(db, "products", product.id), product);
   alert('Product Updated!');
 }
 
+// Delete product by ID
 const deleteProduct = async (productId) =>
 {
-  await firebase.firestore().collection('products').doc(productId).delete() ;
+  await deleteDoc(doc(db, "products", productId));
   alert('Product Removed!');
 }
 
+// Get customer's data by ID
 const getCustomer = async (customerId) =>
 {
-  let doc =  await firebase.firestore().collection('customers').doc(customerId).get();
-  let obj = {...doc.data()};
+  const docRef = doc(db, "customers", customerId);
+  const docSnap = await getDoc(docRef);
+  let obj = {...docSnap.data()};
   return obj;
 }
 
+// Update customer with the given payload
 const updateCustomer = async (customer) =>
 {
-  await firebase.firestore().collection('customers').doc(customer.id).set(customer);  
+  await setDoc(doc(db, "customers", customer.id), customer);
   alert('Customer Updated!');
 }
 
+// Delete customer by ID
 const deleteCustomer = async (customerId) =>
 {
-  await firebase.firestore().collection('customers').doc(customerId).delete();
+  await deleteDoc(doc(db, "customers", customerId));
   alert('Customer Removed!');
 }
 
+// Delete purchase by ID
 const deletePurchase = async (purchaseId) =>
 {
-  await firebase.firestore().collection('purchases').doc(purchaseId).delete();
+  await deleteDoc(doc(db, "purchases", purchaseId));
 }
 
+// Add a new document to purchases collection
 // Could also be named "buyProduct"
 const addPurchase = async (customerId, productId) => {
-  let firebaseTime = firebase.firestore.Timestamp.now();
+  let firebaseTime = Timestamp.now();
   let obj = {customerId: customerId, productId: productId, date: firebaseTime};
-  await firebase.firestore().collection('purchases').add(obj);
+  const docRef = await addDoc(collection(db, "purchases"), obj);
   alert('Product was purchasd!');
 }
 

@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
-import firebase from '../Firebase and Utils/firebaseApp';
 import {Link} from 'react-router-dom';
 import utils from '../Firebase and Utils/Utils';
+import { Timestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 
+// Main Component of Purchases for Displaying and Searching Within all Purchases Made in Store
 function PurhcasesComp() {
-
+  
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [purchases, setPurchases] = useState([]);
-
+  
   const [shownPurchases, setShownPurchases] = useState([]);
-
+  
   const [search, setSearch] = useState({productId: '', customerId: '', date: ''});
+  
+  const navigate = useNavigate();
+
 
   // Get all purchases data from db
   const getPurchases = async () => {
@@ -41,15 +46,15 @@ function PurhcasesComp() {
   }, []);
 
 
-  // This function starts with a temporary array of all the purchases and it is reduced by the user's chosen filters
+  // This function starts with a temporary array of all the purchases and is reduced by the user's chosen filters
   const doSearch = () => {
     let tempPurchases = purchases;
     if (search.date !== '') {
       const start = new Date(search.date);
       var day = 60 * 60 * 24 * 1000;
       const end = new Date(start.getTime() + day);
-      const timestampStart = firebase.firestore.Timestamp.fromDate(start);
-      const timestampEnd = firebase.firestore.Timestamp.fromDate(end);
+      const timestampStart = Timestamp.fromDate(start);
+      const timestampEnd = Timestamp.fromDate(end);
       tempPurchases = tempPurchases.filter(purch => purch.date >= timestampStart && purch.date < timestampEnd);
     }
     if (search.customerId !== '') {
@@ -72,7 +77,7 @@ function PurhcasesComp() {
   return (
     <div className="App" style={ {width: "600px", border: "solid"}}>
       <h3>Purchases Page</h3>
-      Search by product: 
+      Search by Product:  
       <select name="products" defaultValue={0} onChange={e => setSearch({...search, productId: e.target.value})}>
         <option value={''}>All Products</option>
         {
@@ -81,7 +86,7 @@ function PurhcasesComp() {
         })
         }
       </select> <br/>
-      Search by customer: 
+      Search by Customer: 
       <select name="customers" onChange={e => setSearch({...search, customerId: e.target.value})}>
       <option value={''}>All Customers</option>
       {
@@ -90,7 +95,7 @@ function PurhcasesComp() {
       })
       }
       </select> <br/>
-      Search by date: 
+      Search by Date: 
       <input type="text" placeholder="yyyy-mm-dd" onChange={e => setSearch({...search, date: e.target.value})}/> <br/> <br/>
       <input type="button" value="Search" onClick={() => doSearch()}/> <br/> <br/>
       <table border="1" width='600px'>
@@ -105,6 +110,9 @@ function PurhcasesComp() {
           })
       }
       </table> 
+      <br/><br/>
+      <input type="button" value="Back to Menu" onClick={() => navigate('/menu')} />
+      <br/><br/>
     </div>
   );
 }

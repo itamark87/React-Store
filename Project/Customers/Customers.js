@@ -2,12 +2,19 @@ import { useState, useEffect } from 'react';
 import BuyProductComp from '../Products/BuyProduct';
 import utils from '../Firebase and Utils/Utils';
 import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { db } from '../Firebase and Utils/firebaseApp';
+import { collection, query, onSnapshot } from "firebase/firestore";
 
 
+// Main Component of Customers Department
 function CustomersComp() {
-
+  
   const [customers, setCustomers] = useState([]);
   const [buyingCustomer, setBuyingCustomer] = useState({});
+  
+  const navigate = useNavigate();
+
 
   // Get all customers data and all the products purchased by each customer with date of purchase
   const getCustomersAndHistory = async () => {
@@ -31,9 +38,12 @@ function CustomersComp() {
     setCustomers(tempCustomers);
   }
 
-  // Get all customers data and purchases on mount only
+
+  // Get all customers data and purchases on mount and within every purchase made
   useEffect(() => {
     getCustomersAndHistory();
+    const q = query(collection(db, "purchases"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {getCustomersAndHistory()});
   }, []);
 
 
@@ -68,6 +78,9 @@ function CustomersComp() {
         Object.keys(buyingCustomer).length > 0 && 
         <BuyProductComp customer={buyingCustomer} key={buyingCustomer.id} callBack={() => setBuyingCustomer({})}/>
       }
+      <br/><br/>
+      <input type="button" value="Back to Menu" onClick={() => navigate('/menu')} />
+      <br/><br/>
     </div>);
 }
 

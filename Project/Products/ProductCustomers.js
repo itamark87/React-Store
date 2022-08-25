@@ -3,7 +3,7 @@ import { useState } from 'react';
 import BuyProductComp from './BuyProduct';
 
 
-// This component displays the customers and their details for a given product
+// A Child of "Product" Component for Displaying the Customers and their Details for a Given Product
 function ProductCustomersComp(props) {
 
   const [buyingCustomer, setBuyingCustomer] = useState({});
